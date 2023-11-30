@@ -2,51 +2,57 @@
 
 namespace App\Controller;
 
-use Exception;
 use App\Entity\Book;
 use App\Repository\CategoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
-
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 class BookController extends AbstractController
 {
-  /**
-   * @Route("/books", name="create_book", methods={"POST"})
-   */
-  public function index(
-    Request $request, 
-    EntityManagerInterface $em, 
-    CategoryRepository $categoryRepository) : JsonResponse
+/**
+ * @Route("/upload-image", name="upload-image", methods={"POST"})
+ */
+  public function bookController(Request $request, EntityManagerInterface $em, CategoryRepository $categoryRepository): JsonResponse
   {
-    $request = json_decode($request->getContent(), true);
-
-    $category = $categoryRepository->find($request['category_id']);
+   
+    $category = $categoryRepository->find($request->get('category_id'));
     $book = new Book();
 
-    $book->setAuthor($request['author']);
+    $book->setAuthor($request->get('author'));
     $book->setCategory($category);
-    $book->setCoverUrl($request['coverUrl']);
-    $book->setName($request['name']);
-    $book->setSummary($request['summary']);
-    $book->setTotalPages($request['totalPages']);
+    /* $book->setCoverUrl($request->get('coverUrl')); */
+    $book->setName($request->get('name'));
+    $book->setSummary($request->get('summary'));
+    $book->setTotalPages($request->get('totalPages'));;
 
-    $msg = "";
+    if ($request->files->has('coverUrl')) {
+        $coverImage = $request->files->get('coverUrl');
+
+        $imageName = uniqid() . '.' . $coverImage->getClientOriginalExtension();
+
+        try {
+            $coverImage->move(
+                $this->getParameter('covers_directory'),
+                $imageName
+            );
+
+            $book->setCoverUrl($imageName);
+        } catch (FileException $e) {
+            return new JsonResponse(['message' => 'Erro ao fazer upload da imagem da capa.'], 500);
+        }
+    }
 
     try {
-      $em->persist($book);
-      $em->flush();
-      $msg = "Livro cadastrado com sucesso!";
+        $em->persist($book);
+        $em->flush();
 
-      return new JsonResponse(['message' => $msg], 201);
-    }
-    catch(Exception $e){
-      $msg = "Erro ao cadastrar o livro.";
-
-      return new JsonResponse(['message' => $msg], 500);
+        return new JsonResponse(['message' => 'Livro cadastrado com sucesso!'], 201);
+    } catch (\Exception $e) {
+        return new JsonResponse(['message' => 'Erro ao cadastrar o livro.'], 500);
     }
   }
 }
