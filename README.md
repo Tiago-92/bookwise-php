@@ -1,4 +1,4 @@
-# bookwise-php
+# Bookwise (Versão PHP)
 Bookwise versão PHP / Symfony
 
 App para gerenciar seus livros favoritos.
