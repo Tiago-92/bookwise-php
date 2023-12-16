@@ -8,3 +8,12 @@ app_routes:
     path: /upload-image
     controller: 'App\Controller\BookController::bookController'
     methods: ['POST']
+
+book_cover_images:
+    path: /book-covers/{path}
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController::urlRedirectAction
+    defaults:
+        path: '%kernel.project_dir%/uploads/{path}'
+        permanent: true
+    requirements:
+        path: .*    

@@ -18,16 +18,14 @@ class BookController extends AbstractController
  */
   public function bookController(Request $request, EntityManagerInterface $em, CategoryRepository $categoryRepository): JsonResponse
   {
-   
     $category = $categoryRepository->find($request->get('category_id'));
     $book = new Book();
 
     $book->setAuthor($request->get('author'));
     $book->setCategory($category);
-    /* $book->setCoverUrl($request->get('coverUrl')); */
     $book->setName($request->get('name'));
     $book->setSummary($request->get('summary'));
-    $book->setTotalPages($request->get('totalPages'));;
+    $book->setTotalPages($request->get('totalPages'));
 
     if ($request->files->has('coverUrl')) {
         $coverImage = $request->files->get('coverUrl');
@@ -55,4 +53,57 @@ class BookController extends AbstractController
         return new JsonResponse(['message' => 'Erro ao cadastrar o livro.'], 500);
     }
   }
+
+    /**
+     * @Route("/book/{id}", name="book", methods={"GET"})
+     */
+    public function findyBookById($id, EntityManagerInterface $em): JsonResponse
+    {
+        $book = $em->getRepository(Book::class)->find($id);
+
+        if (!$book) {
+            return new JsonResponse(['message' => 'Livro não encontrado.'], 404);
+        }
+
+        $bookInfo = [
+            'id' => $book->getId(),
+            'name' => $book->getName(),
+            'author' => $book->getAuthor(),
+            'category' => $book->getCategory()->getName(),
+            'summary' => $book->getSummary(),
+            'totalPages' => $book->getTotalPages(),
+            'coverUrl' => $book->getCoverUrl(),
+        ];
+
+        return new JsonResponse($bookInfo, 200);
+    }
+
+    /**
+     * @Route("/books/", name="books", methods={"GET"})
+     */
+    public function findAllBooks(EntityManagerInterface $em): JsonResponse
+    {
+        $books = $em->getRepository(Book::class)->findAll();
+
+        if (empty($books)) {
+            return new JsonResponse(['message' => 'Nenhum livro encontrado.'], 404);
+        }
+
+        $booksInfo = [];
+        foreach ($books as $book) {
+            $bookInfo = [
+                'id' => $book->getId(),
+                'name' => $book->getName(),
+                'author' => $book->getAuthor(),
+                'category' => $book->getCategory()->getName(),
+                'summary' => $book->getSummary(),
+                'totalPages' => $book->getTotalPages(),
+                'coverUrl' => $book->getCoverUrl(),
+            ];
+            $booksInfo[] = $bookInfo;
+        }
+
+    return new JsonResponse($booksInfo, 200);
+
+    }
 }
