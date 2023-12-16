@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { api } from './api';
+import { api } from '../api';
 
 export function App() {
   const [author, setAuthor] = useState("")
@@ -7,7 +7,7 @@ export function App() {
   const [name, setName] = useState("")
   const [summary, setSummary] = useState("")
   const [totalPages, setTotalPages] = useState("")
-  const [categoryId , setCategoryID] = useState(1)
+  // const [categoryId , setCategoryID] = useState(1)
 
   function handleCreateBook(event) {
     event.preventDefault();
