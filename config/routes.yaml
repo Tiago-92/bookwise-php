@@ -16,4 +16,12 @@ book_cover_images:
         path: '%kernel.project_dir%/uploads/{path}'
         permanent: true
     requirements:
+        path: .*
+        
+uploaded_images:
+    path: /uploads/{path}
+    controller: Symfony\Bundle\FrameworkBundle\Controller\FileController::showAction
+    defaults:
+        file: '%kernel.project_dir%/uploads/{path}'
+    requirements:
         path: .*    

@@ -7,8 +7,10 @@ use App\Repository\CategoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class BookController extends AbstractController
@@ -105,5 +107,26 @@ class BookController extends AbstractController
 
     return new JsonResponse($booksInfo, 200);
 
+    }
+
+    /**
+     * @Route("/book-covers/{coverUrl}", name="book_cover")
+     */
+    public function getBookCover($coverUrl)
+    {
+        $coverPath = $this->getParameter('covers_directory') . '/' . $coverUrl;
+
+        // Verifica se o arquivo da capa existe
+        if (!file_exists($coverPath)) {
+            throw $this->createNotFoundException('A capa do livro não foi encontrada.');
+        }
+
+        $coverFile = new File($coverPath);
+
+        // Retorna a imagem como uma resposta HTTP
+        $response = new Response(file_get_contents($coverFile->getPathname()));
+        $response->headers->set('Content-Type', $coverFile->getMimeType());
+
+        return $response;
     }
 }

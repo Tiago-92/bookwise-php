@@ -56,7 +56,7 @@ export function Book() {
           </h2>
           <div className="w-[320px] flex gap-[0.75rem] overflow-x-auto md:flex-col md:w-full">
             {bookData.map(book => (
-              <CommentCard data={book} />
+              <CommentCard key={book} data={book} />
             ))}
           </div>
         </div>

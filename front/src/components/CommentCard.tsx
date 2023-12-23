@@ -1,14 +1,17 @@
 import { Star } from "phosphor-react"
+import { api } from "../api";
 
 interface BookProps {
+  id: string;
   name: string;
   author: string;
   category: string;
   summary: string;
   bookID: string;
+  coverUrl: string;
 }
 
-interface DataProps {
+export interface DataProps {
   data: BookProps
 }
 
@@ -35,7 +38,11 @@ export default function CommentCard({ data }: DataProps) {
       </header>
       <section className="flex mt-4 gap-5">
         <div className="w-[175px] md:w-[108px] md:h-[152px]">
-          {/* <Image src={theHobbit} alt="capa do livro ??" /> */}
+        <img
+          src={`http://localhost:8000/book-covers/${data.coverUrl}`}
+          alt={data.name}
+          className="w-full h-full object-cover rounded-lg"
+        />
         </div>
         <div className="flex flex-col w-[27rem]">
           <cite className="text-base text-gray-1#">{data.name}</cite>
