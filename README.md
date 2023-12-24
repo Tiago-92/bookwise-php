@@ -6,7 +6,7 @@ App para gerenciar seus livros favoritos.
 # Tecnologias
 
 # Back-end: 
-PHP, Symfony, Doctrine ORM, MySQL
+PHP, Symfony, Doctrine ORM, MySQL, Docker
 
 # Front-end:
 React, TypeScript, Tailwind CSS
